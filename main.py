@@ -12,6 +12,9 @@ from discord.ui import View, Button, Select
 from discord import Embed
 import discord
 import uuid
+from db_users import load_user, save_user
+from db_alliances import load_alliance, save_alliance
+
 
 last_rp_year = None
 load_dotenv()
@@ -35,9 +38,35 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# --- Plik z danymi ---
-users_file = "users.json"
-alliances_file = "alliances.json"
+
+
+import psycopg2
+import psycopg2.extras
+import json
+from datetime import date, datetime
+import os
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+conn = psycopg2.connect(DATABASE_URL)
+cur = conn.cursor()
+
+# Tworzymy tabele jeśli nie istnieją
+cur.execute('''
+CREATE TABLE IF NOT EXISTS users_data (
+    id SERIAL PRIMARY KEY,
+    data JSONB NOT NULL
+)
+''')
+
+cur.execute('''
+CREATE TABLE IF NOT EXISTS alliances_data (
+    id SERIAL PRIMARY KEY,
+    data JSONB NOT NULL
+)
+''')
+
+conn.commit()
 
 
 def json_converter(o):
@@ -47,54 +76,53 @@ def json_converter(o):
 
 
 def load_data():
-    try:
-        with open(users_file, "r") as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        print(
-            "Błąd: plik JSON jest uszkodzony lub pusty. Tworzę nowy pusty słownik."
-        )
+    cur.execute("SELECT data FROM users_data WHERE id=1")
+    row = cur.fetchone()
+    if row is None:
+        print("Brak danych users, zwracam pusty słownik")
         return {}
-    except FileNotFoundError:
-        print("Plik nie istnieje, tworzę nowy pusty słownik.")
-        return {}
+    return row[0]  # już w formacie dict
 
 
 def save_data(data):
+    # serializacja aby mieć pewność, że JSON jest poprawny
+    json_data = json.dumps(data, default=json_converter)
 
-    def json_converter(o):
-        if isinstance(o, (date, datetime)):
-            return o.isoformat()  # zamienia date/datetime na string ISO
-        raise TypeError(f"Nie mogę serializować obiektu typu {type(o)}")
-
-    with open(users_file, "w") as f:
-        json.dump(data, f, indent=4, default=json_converter)
+    # sprawdzamy, czy istnieje rekord
+    cur.execute("SELECT id FROM users_data WHERE id=1")
+    if cur.fetchone() is None:
+        # wstaw nowy rekord
+        cur.execute("INSERT INTO users_data (id, data) VALUES (1, %s)", (json_data,))
+    else:
+        # aktualizuj istniejący
+        cur.execute("UPDATE users_data SET data=%s WHERE id=1", (json_data,))
+    conn.commit()
 
 
 def load_alliances():
-    try:
-        with open(alliances_file, "r") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, FileNotFoundError):
-        print(
-            "Błąd: plik alliances.json nie istnieje lub jest uszkodzony. Tworzę nowy pusty słownik."
-        )
+    cur.execute("SELECT data FROM alliances_data WHERE id=1")
+    row = cur.fetchone()
+    if row is None:
+        print("Brak danych alliances, zwracam pusty słownik")
         return {}
+    return row[0]
 
 
 def save_alliances(data):
+    json_data = json.dumps(data, default=json_converter)
 
-    def json_converter(o):
-        if isinstance(o, (date, datetime)):
-            return o.isoformat()
-        raise TypeError(f"Nie mogę serializować obiektu typu {type(o)}")
+    cur.execute("SELECT id FROM alliances_data WHERE id=1")
+    if cur.fetchone() is None:
+        cur.execute("INSERT INTO alliances_data (id, data) VALUES (1, %s)", (json_data,))
+    else:
+        cur.execute("UPDATE alliances_data SET data=%s WHERE id=1", (json_data,))
+    conn.commit()
 
-    with open(alliances_file, "w") as f:
-        json.dump(data, f, indent=4, default=json_converter)
 
-
-users = load_data()
-alliances = load_alliances()
+# Opcjonalnie na końcu możesz zamknąć kursor i połączenie,
+# albo zostawić otwarte na czas działania bota.
+# cur.close()
+# conn.close()
 pending_join_requests = {}
 units = {
     "Piechota liniowa": 2,
