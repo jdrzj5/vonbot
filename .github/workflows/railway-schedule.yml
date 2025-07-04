@@ -2,28 +2,22 @@ name: Railway Scheduled Start/Stop
 
 on:
   schedule:
-    - cron: "00 12 * * *"    # codziennie o 08:30 UTC
-    - cron: "00 13 * * *"    # codziennie o 00:30 UTC
-  workflow_dispatch:
+    - cron: "0 12 * * *"   # Włącz o 12:00 UTC
+    - cron: "0 13 * * *"   # Wyłącz o 13:00 UTC
+  workflow_dispatch:       # Pozwala uruchomić ręcznie
 
 jobs:
-  start_bot:
-    if: github.event.schedule == '30 8 * * *'
+  control:
     runs-on: ubuntu-latest
     steps:
-      - name: Start Railway Project
+      - name: Włącz/Wyłącz Railway
         run: |
-          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/deployments \
-          -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{"clearCache":true}'
-
-  stop_bot:
-    if: github.event.schedule == '30 0 * * *'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Stop Railway Project
-        run: |
-          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/stop \
-          -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
-          -H "Content-Type: application/json"
+          if [ "$(date -u +%H)" = "12" ]; then
+            echo "==> START Railway"
+            curl -X POST https://backboard.railway.app/project/YOUR_PROJECT_ID/service/YOUR_SERVICE_ID/deploy \
+              -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}"
+          elif [ "$(date -u +%H)" = "13" ]; then
+            echo "==> STOP Railway"
+            curl -X DELETE https://backboard.railway.app/project/YOUR_PROJECT_ID/service/YOUR_SERVICE_ID/instances \
+              -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}"
+          fi
