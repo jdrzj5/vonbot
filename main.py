@@ -1995,7 +1995,7 @@ class InvitationResponseView(discord.ui.View):
             return
 
         alliance["members"].append(self.invitee_id)
-        set_alliance_members_relations(alliance_id)
+        set_alliance_members_relations(self.alliance_id)
         users[self.invitee_id]["alliance_id"] = self.alliance_id
         if self.invitee_id in alliance["invitations"]:
             alliance["invitations"].remove(self.invitee_id)
