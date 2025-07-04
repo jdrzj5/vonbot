@@ -16,13 +16,13 @@ jobs:
           MINUTE=$(date -u +"%M")
           echo "Godzina UTC: $HOUR:$MINUTE"
 
-          if [ "$HOUR" = "08" ] && [ "$MINUTE" = "30" ]; then
+          if [ "$HOUR" = "12" ] && [ "$MINUTE" = "00" ]; then
             echo "Włączam Railway..."
             curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/deployments \
             -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{"clearCache":true}'
-          elif [ "$HOUR" = "00" ] && [ "$MINUTE" = "30" ]; then
+          elif [ "$HOUR" = "13" ] && [ "$MINUTE" = "00" ]; then
             echo "Wyłączam Railway..."
             curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/stop \
             -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
