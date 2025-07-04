@@ -2309,5 +2309,5 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=embed)
 
 
-bot.run(os.getenv("TOKEN"))
+bot.run(os.getenv("DISCORD_TOKEN"))
 
