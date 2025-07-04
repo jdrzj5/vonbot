@@ -2,31 +2,28 @@ name: Railway Scheduled Start/Stop
 
 on:
   schedule:
-    - cron: "00 12 * * *"    # o 00:30 UTC – wyłącz
-    - cron: "00 13 * * *"    # o 08:30 UTC – włącz
+    - cron: "30 8 * * *"    # codziennie o 08:30 UTC
+    - cron: "30 0 * * *"    # codziennie o 00:30 UTC
   workflow_dispatch:
 
 jobs:
-  control_bot:
+  start_bot:
+    if: github.event.schedule == '30 8 * * *'
     runs-on: ubuntu-latest
     steps:
-      - name: Decyzja: start czy stop?
+      - name: Start Railway Project
         run: |
-          HOUR=$(date -u +"%H")
-          MINUTE=$(date -u +"%M")
-          echo "Godzina UTC: $HOUR:$MINUTE"
+          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/deployments \
+          -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"clearCache":true}'
 
-          if [ "$HOUR" = "12" ] && [ "$MINUTE" = "00" ]; then
-            echo "Włączam Railway..."
-            curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/deployments \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{"clearCache":true}'
-          elif [ "$HOUR" = "13" ] && [ "$MINUTE" = "00" ]; then
-            echo "Wyłączam Railway..."
-            curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/stop \
-            -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
-            -H "Content-Type: application/json"
-          else
-            echo "Nie wykonano żadnej akcji."
-          fi
+  stop_bot:
+    if: github.event.schedule == '30 0 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop Railway Project
+        run: |
+          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/stop \
+          -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
+          -H "Content-Type: application/json"
