@@ -121,6 +121,8 @@ def save_alliances(data):
 # albo zostawić otwarte na czas działania bota.
 # cur.close()
 # conn.close()
+users = load_user()
+alliances =load_alliances()
 pending_join_requests = {}
 units = {
     "Piechota liniowa": 2,
