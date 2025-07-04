@@ -12,8 +12,6 @@ from discord.ui import View, Button, Select
 from discord import Embed
 import discord
 import uuid
-from db_users import load_user, save_user
-from db_alliances import load_alliance, save_alliance
 
 
 last_rp_year = None
