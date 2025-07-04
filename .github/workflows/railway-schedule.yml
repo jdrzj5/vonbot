@@ -2,8 +2,8 @@ name: Railway Scheduled Start/Stop
 
 on:
   schedule:
-    - cron: "30 6 * * *"    # codziennie o 08:30 UTC
-    - cron: "30 22 * * *"    # codziennie o 00:30 UTC
+    - cron: "30 6 * * *"    # codziennie o 06:30 UTC
+    - cron: "30 22 * * *"    # codziennie o 22:30 UTC
   workflow_dispatch:
 
 jobs:
