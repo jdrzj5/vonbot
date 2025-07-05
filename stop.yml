@@ -1,0 +1,28 @@
+name: Stop Railway Services
+
+on:
+  schedule:
+    - cron: "31 9 * * *"  # Codziennie o 09:31 UTC
+  workflow_dispatch:
+
+jobs:
+  stop_services:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop Bot Service
+        run: |
+          curl -X POST https://backboard.railway.com/graphql/v2 \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer 9158f138-340a-42b7-aae2-aa55270f5e3e" \
+            -d '{
+              "query": "mutation { serviceStop(id: \"023a3764-6bec-4563-8e4d-37a7e2e9c24c\") { id } }"
+            }'
+
+      - name: Stop DB Service
+        run: |
+          curl -X POST https://backboard.railway.com/graphql/v2 \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer 9158f138-340a-42b7-aae2-aa55270f5e3e" \
+            -d '{
+              "query": "mutation { serviceStop(id: \"c15723c2-5d16-445e-9b3b-bac10424753b\") { id } }"
+            }'
