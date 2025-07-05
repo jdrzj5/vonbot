@@ -2,7 +2,7 @@ name: Stop Railway Services
 
 on:
   schedule:
-    - cron: "25 9 * * *"
+    - cron: "31 9 * * *"
   workflow_dispatch:
 
 jobs:
