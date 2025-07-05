@@ -2,25 +2,22 @@ name: Stop Railway Services
 
 on:
   schedule:
-    - cron: "31 9 * * *"  # codziennie o 09:31 UTC
+    - cron: "31 9 * * *"
   workflow_dispatch:
 
 jobs:
   stop:
     runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
       - name: Install Railway CLI (new version)
         run: npm install -g @railway/cli
 
-      - name: Login to Railway CLI
-        run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
-
       - name: Stop Bot Service
         run: |
-          railway service:stop 023a3764-6bec-4563-8e4d-37a7e2e9c24c \
-            --project f241eb99-c0cd-43d0-b052-ed4bc09ab72a
+          railway service:stop 023a3764-6bec-4563-8e4d-37a7e2e9c24c --project f241eb99-c0cd-43d0-b052-ed4bc09ab72a
 
       - name: Stop DB Service
         run: |
-          railway service:stop c15723c2-5d16-445e-9b3b-bac10424753b \
-            --project f241eb99-c0cd-43d0-b052-ed4bc09ab72a
+          railway service:stop c15723c2-5d16-445e-9b3b-bac10424753b --project f241eb99-c0cd-43d0-b052-ed4bc09ab72a
