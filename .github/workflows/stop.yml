@@ -9,7 +9,7 @@ jobs:
   stop:
     runs-on: ubuntu-latest
     env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_PROJECT_TOKEN }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -17,5 +17,5 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Stop entire Railway project
+      - name: Stop services
         run: railway down
