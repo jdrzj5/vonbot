@@ -2,7 +2,7 @@ name: Start Railway Services
 
 on:
   schedule:
-    - cron: "45 8 * * *"
+    - cron: "0 9 * * *"
   workflow_dispatch:
 
 jobs:
