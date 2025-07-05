@@ -17,8 +17,10 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Link to Railway project
-        run: railway link --project f241eb99-c0cd-43d0-b052-ed4bc09ab72a
+      - name: Stop Bot Service
+        run: |
+          railway down --project f241eb99-c0cd-43d0-b052-ed4bc09ab72a --service 023a3764-6bec-4563-8e4d-37a7e2e9c24c
 
-      - name: Stop project
-        run: railway down
+      - name: Stop DB Service
+        run: |
+          railway down --project f241eb99-c0cd-43d0-b052-ed4bc09ab72a --service c15723c2-5d16-445e-9b3b-bac10424753b
