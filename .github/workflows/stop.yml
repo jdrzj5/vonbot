@@ -17,5 +17,8 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Stop services
+      - name: Link project
+        run: railway link --project f241eb99-c0cd-43d0-b052-ed4bc09ab72a
+
+      - name: Stop all services in project
         run: railway down
