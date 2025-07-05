@@ -2,28 +2,39 @@ name: Railway Scheduled Start/Stop
 
 on:
   schedule:
-    - cron: "30 6 * * *"    # codziennie o 06:30 UTC
-    - cron: "30 22 * * *"    # codziennie o 22:30 UTC
+    - cron: "00 8 * * *"    # codziennie o 06:30 UTC – START
+    - cron: "15 8 * * *"   # codziennie o 22:30 UTC – STOP
   workflow_dispatch:
 
 jobs:
   start_bot:
-    if: github.event.schedule == '30 6 * * *'
+    if: github.event.schedule == '00 8 * * *'
     runs-on: ubuntu-latest
     steps:
-      - name: Start Railway Project
+      - name: Start Bot Service
         run: |
-          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/deployments \
+          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/${{ secrets.RAILWAY_SERVICE_ID }}/start \
           -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{"clearCache":true}'
+          -H "Content-Type: application/json"
+
+      - name: Start DB Service
+        run: |
+          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/${{ secrets.RAILWAY_DB_SERVICE_ID }}/start \
+          -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
+          -H "Content-Type: application/json"
 
   stop_bot:
-    if: github.event.schedule == '30 22 * * *'
+    if: github.event.schedule == '15 8 * * *'
     runs-on: ubuntu-latest
     steps:
-      - name: Stop Railway Project
+      - name: Stop Bot Service
         run: |
-          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/stop \
+          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/${{ secrets.RAILWAY_SERVICE_ID }}/stop \
+          -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
+          -H "Content-Type: application/json"
+
+      - name: Stop DB Service
+        run: |
+          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/${{ secrets.RAILWAY_DB_SERVICE_ID }}/stop \
           -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
           -H "Content-Type: application/json"
