@@ -11,19 +11,14 @@ jobs:
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
-      - name: Checkout repo (optional but safe)
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Install Railway CLI
         run: npm install -g @railway/cli
-
-      - name: Authenticate with Railway
-        run: railway login --token $RAILWAY_TOKEN
 
       - name: Link to Railway project
         run: railway link f241eb99-c0cd-43d0-b052-ed4bc09ab72a
 
       - name: Stop project
         run: railway down
-
-
