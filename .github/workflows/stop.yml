@@ -2,41 +2,41 @@ name: Stop Railway Services
 
 on:
   schedule:
-    - cron: "31 9 * * *"  # UTC
+    - cron: "31 9 * * *"  # UTC czas stopowania
   workflow_dispatch:
 
 jobs:
   stop:
     runs-on: ubuntu-latest
-    env:
-      RAILWAY_API_KEY: 9158f138-340a-42b7-aae2-aa55270f5e3e
-      PROJECT_ID: f241eb99-c0cd-43d0-b052-ed4bc09ab72a
-      SERVICE_ID_BOT: 023a3764-6bec-4563-8e4d-37a7e2e9c24c
-      SERVICE_ID_DB: c15723c2-5d16-445e-9b3b-bac10424753b
-
     steps:
       - name: Stop Bot Service
         run: |
           curl -X POST https://backboard.railway.com/graphql/v2 \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $RAILWAY_API_KEY" \
-            -d '{
-              "query": "mutation StopService($projectId: ID!, $serviceId: ID!) { stopService(projectId: $projectId, serviceId: $serviceId) { id } }",
-              "variables": {
-                "projectId": "'"$PROJECT_ID"'",
-                "serviceId": "'"$SERVICE_ID_BOT"'"
-              }
-            }'
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer 9158f138-340a-42b7-aae2-aa55270f5e3e" \
+          --data-binary @- <<EOF
+{
+  "operationName": "StopService",
+  "query": "mutation StopService(\$projectId: ID!, \$serviceId: ID!) { stopService(projectId: \$projectId, serviceId: \$serviceId) { id } }",
+  "variables": {
+    "projectId": "f241eb99-c0cd-43d0-b052-ed4bc09ab72a",
+    "serviceId": "023a3764-6bec-4563-8e4d-37a7e2e9c24c"
+  }
+}
+EOF
 
       - name: Stop DB Service
         run: |
           curl -X POST https://backboard.railway.com/graphql/v2 \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $RAILWAY_API_KEY" \
-            -d '{
-              "query": "mutation StopService($projectId: ID!, $serviceId: ID!) { stopService(projectId: $projectId, serviceId: $serviceId) { id } }",
-              "variables": {
-                "projectId": "'"$PROJECT_ID"'",
-                "serviceId": "'"$SERVICE_ID_DB"'"
-              }
-            }'
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer 9158f138-340a-42b7-aae2-aa55270f5e3e" \
+          --data-binary @- <<EOF
+{
+  "operationName": "StopService",
+  "query": "mutation StopService(\$projectId: ID!, \$serviceId: ID!) { stopService(projectId: \$projectId, serviceId: \$serviceId) { id } }",
+  "variables": {
+    "projectId": "f241eb99-c0cd-43d0-b052-ed4bc09ab72a",
+    "serviceId": "c15723c2-5d16-445e-9b3b-bac10424753b"
+  }
+}
+EOF
