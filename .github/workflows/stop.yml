@@ -1,6 +1,9 @@
 name: Stop Railway Services
 
 on:
+name: Stop Railway Services
+
+on:
   schedule:
     - cron: "31 9 * * *"
   workflow_dispatch:
@@ -11,10 +14,19 @@ jobs:
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
+      - name: Checkout repo (optional but safe)
+        uses: actions/checkout@v3
+
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Stop all services (down)
-        run: |
-          railway down --project f241eb99-c0cd-43d0-b052-ed4bc09ab72a
+      - name: Authenticate with Railway
+        run: railway login --token $RAILWAY_TOKEN
+
+      - name: Link to Railway project
+        run: railway link f241eb99-c0cd-43d0-b052-ed4bc09ab72a
+
+      - name: Stop project
+        run: railway down
+
 
