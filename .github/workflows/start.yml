@@ -1,0 +1,22 @@
+name: Start Railway Services
+
+on:
+  schedule:
+    - cron: "15 8 * * *"  # 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Bot Service
+        run: |
+          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/${{ secrets.RAILWAY_SERVICE_ID }}/start \
+          -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
+          -H "Content-Type: application/json"
+
+      - name: Start DB Service
+        run: |
+          curl -X POST https://backboard.railway.app/api/v1/projects/${{ secrets.RAILWAY_PROJECT_ID }}/services/${{ secrets.RAILWAY_DB_SERVICE_ID }}/start \
+          -H "Authorization: Bearer ${{ secrets.RAILWAY_API_KEY }}" \
+          -H "Content-Type: application/json"
