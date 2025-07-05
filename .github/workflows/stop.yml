@@ -1,9 +1,6 @@
 name: Stop Railway Services
 
 on:
-name: Stop Railway Services
-
-on:
   schedule:
     - cron: "31 9 * * *"
   workflow_dispatch:
