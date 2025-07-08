@@ -25,7 +25,7 @@ def has_role(member, role_id=1389959233461682256):
 
 # --- RP year settings ---
 rp_start_year = 1904
-start_date = date(2025, 7, 1)
+start_date = date(2025, 7, 9)
 current_rp_year = rp_start_year + (date.today() - start_date).days
 channel_id = 1389937231866757151  # Wstaw tutaj ID kanału na którym ma się wysyłać rok RP
 
